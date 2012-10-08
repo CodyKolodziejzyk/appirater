@@ -49,9 +49,9 @@ NSString *const kAppiraterReminderRequestDate		= @"kAppiraterReminderRequestDate
 NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=APP_ID";
 
 static NSString *_appId;
-static double _daysUntilPrompt = 30;
-static NSInteger _usesUntilPrompt = 20;
-static NSInteger _significantEventsUntilPrompt = -1;
+static double _daysUntilPrompt = -1;
+static NSInteger _usesUntilPrompt = -1;
+static NSInteger _significantEventsUntilPrompt = 2;
 static double _timeBeforeReminding = 1;
 static BOOL _debug = NO;
 static id<AppiraterDelegate> _delegate;
@@ -65,9 +65,9 @@ static id<AppiraterDelegate> _delegate;
 - (void)hideRatingAlert;
 @end
 
-@implementation Appirater 
+@implementation Appirater
 
-@synthesize ratingAlert;
+@synthesize ratingAlert = _ratingAlert;
 
 + (void) setAppId:(NSString *)appId {
     _appId = appId;
@@ -144,14 +144,22 @@ static id<AppiraterDelegate> _delegate;
 }
 
 - (void)showRatingAlert {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:APPIRATER_MESSAGE_TITLE
-														 message:APPIRATER_MESSAGE
-														delegate:self
-											   cancelButtonTitle:APPIRATER_CANCEL_BUTTON
-											   otherButtonTitles:APPIRATER_RATE_BUTTON, APPIRATER_RATE_LATER, nil];
-	self.ratingAlert = alertView;
-	[alertView show];
-	
+    
+    BlockAlertView *alertView = [[BlockAlertView alloc] initWithTitle:APPIRATER_MESSAGE_TITLE message:APPIRATER_MESSAGE];
+    [alertView setDestructiveButtonWithTitle:APPIRATER_CANCEL_BUTTON block:^{
+        //Nothing
+    }];
+    
+    [alertView addButtonWithTitle:APPIRATER_RATE_BUTTON block:^{
+        [Appirater rateApp];
+        if(self.delegate && [self.delegate respondsToSelector:@selector(appiraterDidOptToRate:)]){
+            [self.delegate appiraterDidOptToRate:self];
+        }
+    }];
+    
+    self.ratingAlert = alertView;
+    [alertView show];
+    
 	if(self.delegate && [self.delegate respondsToSelector:@selector(appiraterDidDisplayAlert:)]){
 		[self.delegate appiraterDidDisplayAlert:self];
 	}
@@ -333,11 +341,9 @@ static id<AppiraterDelegate> _delegate;
 }
 
 - (void)hideRatingAlert {
-	if (self.ratingAlert.visible) {
 		if (_debug)
 			NSLog(@"APPIRATER Hiding Alert");
 		[self.ratingAlert dismissWithClickedButtonIndex:-1 animated:NO];
-	}	
 }
 
 + (void)appWillResignActive {
@@ -373,42 +379,6 @@ static id<AppiraterDelegate> _delegate;
 	[userDefaults synchronize];
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:reviewURL]];
 #endif
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-	
-	switch (buttonIndex) {
-		case 0:
-		{
-			// they don't want to rate it
-			[userDefaults setBool:YES forKey:kAppiraterDeclinedToRate];
-			[userDefaults synchronize];
-			if(self.delegate && [self.delegate respondsToSelector:@selector(appiraterDidDeclineToRate:)]){
-				[self.delegate appiraterDidDeclineToRate:self];
-			}
-			break;
-		}
-		case 1:
-		{
-			// they want to rate it
-			[Appirater rateApp];
-			if(self.delegate && [self.delegate respondsToSelector:@selector(appiraterDidOptToRate:)]){
-				[self.delegate appiraterDidOptToRate:self];
-			}
-			break;
-		}
-		case 2:
-			// remind them later
-			[userDefaults setDouble:[[NSDate date] timeIntervalSince1970] forKey:kAppiraterReminderRequestDate];
-			[userDefaults synchronize];
-			if(self.delegate && [self.delegate respondsToSelector:@selector(appiraterDidOptToRemindLater:)]){
-				[self.delegate appiraterDidOptToRemindLater:self];
-			}
-			break;
-		default:
-			break;
-	}
 }
 
 @end

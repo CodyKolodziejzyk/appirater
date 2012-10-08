@@ -36,6 +36,7 @@
 
 #import <Foundation/Foundation.h>
 #import "AppiraterDelegate.h"
+#import "BlockAlertView.h"
 
 extern NSString *const kAppiraterFirstUseDate;
 extern NSString *const kAppiraterUseCount;
@@ -59,24 +60,24 @@ extern NSString *const kAppiraterReminderRequestDate;
  This is the message your users will see once they've passed the day+launches
  threshold.
  */
-#define APPIRATER_LOCALIZED_MESSAGE     NSLocalizedStringFromTable(@"If you enjoy using %@, would you mind taking a moment to rate it? It won't take more than a minute. Thanks for your support!", @"AppiraterLocalizable", nil)
+#define APPIRATER_LOCALIZED_MESSAGE     NSLocalizedStringFromTable(@"Do you love %@? Show us some love in the app store!", @"AppiraterLocalizable", nil)
 #define APPIRATER_MESSAGE				[NSString stringWithFormat:APPIRATER_LOCALIZED_MESSAGE, APPIRATER_APP_NAME]
 
 /*
  This is the title of the message alert that users will see.
  */
-#define APPIRATER_LOCALIZED_MESSAGE_TITLE   NSLocalizedStringFromTable(@"Rate %@", @"AppiraterLocalizable", nil)
+#define APPIRATER_LOCALIZED_MESSAGE_TITLE   NSLocalizedStringFromTable(@"Rate %@!", @"AppiraterLocalizable", nil)
 #define APPIRATER_MESSAGE_TITLE             [NSString stringWithFormat:APPIRATER_LOCALIZED_MESSAGE_TITLE, APPIRATER_APP_NAME]
 
 /*
  The text of the button that rejects reviewing the app.
  */
-#define APPIRATER_CANCEL_BUTTON			NSLocalizedStringFromTable(@"No, Thanks", @"AppiraterLocalizable", nil)
+#define APPIRATER_CANCEL_BUTTON			NSLocalizedStringFromTable(@"No Thanks", @"AppiraterLocalizable", nil)
 
 /*
  Text of button that will send user to app review page.
  */
-#define APPIRATER_LOCALIZED_RATE_BUTTON NSLocalizedStringFromTable(@"Rate %@", @"AppiraterLocalizable", nil)
+#define APPIRATER_LOCALIZED_RATE_BUTTON NSLocalizedStringFromTable(@"Sure!", @"AppiraterLocalizable", nil)
 #define APPIRATER_RATE_BUTTON			[NSString stringWithFormat:APPIRATER_LOCALIZED_RATE_BUTTON, APPIRATER_APP_NAME]
 
 /*
@@ -84,12 +85,12 @@ extern NSString *const kAppiraterReminderRequestDate;
  */
 #define APPIRATER_RATE_LATER			NSLocalizedStringFromTable(@"Remind me later", @"AppiraterLocalizable", nil)
 
-@interface Appirater : NSObject <UIAlertViewDelegate> {
+@interface Appirater : NSObject {
 
 	UIAlertView		*ratingAlert;
 }
 
-@property(nonatomic, strong) UIAlertView *ratingAlert;
+@property(nonatomic, strong) BlockAlertView *ratingAlert;
 @property(nonatomic, weak) NSObject <AppiraterDelegate> *delegate;
 
 /*

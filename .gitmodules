@@ -1,0 +1,6 @@
+[submodule "AppRaterTest/Frameworks/Reachability"]
+	path = AppRaterTest/Frameworks/Reachability
+	url = git://github.com/tonymillion/Reachability.git
+[submodule "AppRaterTest/Frameworks/BlockAlerts"]
+	path = AppRaterTest/Frameworks/BlockAlerts
+	url = git://github.com/gpambrozio/BlockAlertsAnd-ActionSheets.git
