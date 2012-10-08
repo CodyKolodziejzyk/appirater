@@ -51,7 +51,7 @@ NSString *templateReviewURL = @"itms-apps://ax.itunes.apple.com/WebObjects/MZSto
 static NSString *_appId;
 static double _daysUntilPrompt = -1;
 static NSInteger _usesUntilPrompt = -1;
-static NSInteger _significantEventsUntilPrompt = 2;
+static NSInteger _significantEventsUntilPrompt =0;
 static double _timeBeforeReminding = 1;
 static BOOL _debug = NO;
 static id<AppiraterDelegate> _delegate;
