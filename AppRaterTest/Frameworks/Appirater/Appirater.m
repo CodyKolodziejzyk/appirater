@@ -147,7 +147,13 @@ static id<AppiraterDelegate> _delegate;
     
     BlockAlertView *alertView = [[BlockAlertView alloc] initWithTitle:APPIRATER_MESSAGE_TITLE message:APPIRATER_MESSAGE];
     [alertView setDestructiveButtonWithTitle:APPIRATER_CANCEL_BUTTON block:^{
-        //Nothing
+        // they don't want to rate it
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults setBool:YES forKey:kAppiraterDeclinedToRate];
+        [userDefaults synchronize];
+        if(self.delegate && [self.delegate respondsToSelector:@selector(appiraterDidDeclineToRate:)]){
+            [self.delegate appiraterDidDeclineToRate:self];
+        }
     }];
     
     [alertView addButtonWithTitle:APPIRATER_RATE_BUTTON block:^{
